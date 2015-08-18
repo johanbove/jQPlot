@@ -1,5 +1,5 @@
 /*jslint browser: true, plusplus: true, nomen: true, white: false, continue: true */
-/*global jQuery, console, jqPlot */
+/*global jQuery */
 
 /**
  * jqPlot
@@ -713,6 +713,8 @@
         }
         */
         
+        
+        
         // Go through all the series attached to this axis and find
         // the min/max bounds for this axis.
         for (i = 0; i < this._series.length; i++) {
@@ -750,6 +752,7 @@
                             stats.frequencies[intv] = 1;
                         }
                     }
+                    
                     sum += intv;
                     
                 } else {
@@ -776,7 +779,9 @@
                         }
                     }
                 }
+                
                 sum += intv;
+                
             }
 
             if (s.renderer.bands) {
@@ -944,7 +949,6 @@
         if (userTicks.length) {
             renderTicks = RendererExistingTicks.bind(this);
             renderTicks(userTicks);
-            
         // We don't have any ticks yet, let's make some!
         // Special case when there is only one point, make three tick marks to center the point
         } else if (this.min === null && this.max === null && db.min === db.max) {
