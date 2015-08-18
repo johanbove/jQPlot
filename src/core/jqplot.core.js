@@ -1,5 +1,5 @@
 /*jslint browser: true, plusplus: true, nomen: true, white: false, continue: true */
-/*global jQuery, console, jqPlot */
+/*global jQuery */
 
 /**
  * Title: jqPlot Charts
@@ -1111,6 +1111,15 @@
         this._plotDimensions = {height: null, width: null};
     };
     
+    /**
+     * [[Description]]
+     * @param   {[[Type]]} el      [[Description]]
+     * @param   {[[Type]]} offsets [[Description]]
+     * @param   {[[Type]]} clss    [[Description]]
+     * @param   {[[Type]]} cssopts [[Description]]
+     * @param   {[[Type]]} attrib  [[Description]]
+     * @returns {[[Type]]} [[Description]]
+     */
     $.jqplot.ElemContainer.prototype.createElement = function (el, offsets, clss, cssopts, attrib) {
         this._offsets = offsets;
         var klass = clss || 'jqplot',
@@ -2734,8 +2743,10 @@
         if (this._addDomReference) {
             this.target.data('jqplot', this);
         }
+        
         // remove any error class that may be stuck on target.
         this.target.removeClass('jqplot-error');
+        
         if (!this.target.get(0)) {
             throw new Error("No plot target specified");
         }
@@ -2744,6 +2755,7 @@
         if (this.target.css('position') === 'static') {
             this.target.css('position', 'relative');
         }
+        
         if (!this.target.hasClass('jqplot-target')) {
             this.target.addClass('jqplot-target');
         }
@@ -3288,7 +3300,7 @@
             k,
             cdl,
             temp,
-            prevval,
+            prevval = null,
             dtlen;
 
         this._plotData = [];
@@ -3334,12 +3346,15 @@
                     if (index > 0) {
                         j = index;
                         while (j--) {
-                            prevval = this._plotData[j][k][sidx];
+                            //window.console.log("computePlotData", j, k, sidx, this._plotData[j][k]);
+                            if (this._plotData[j][k]) {
+                                prevval = this._plotData[j][k][sidx];
+                            }
                             // only need to sum up the stack axis column of data
                             // and only sum if it is of same sign.
                             // if previous series isn't same sign, keep looking
                             // at earlier series untill we find one of same sign.
-                            if (temp * prevval >= 0) {
+                            if (prevval && temp * prevval >= 0) {
                                 this._plotData[index][k][sidx] += prevval;
                                 this._stackData[index][k][sidx] += prevval;
                                 break;
@@ -3487,6 +3502,13 @@
             tempi,
             n,
             axis,
+            /**
+             * [[Description]]
+             * @param   {[[Type]]} data  [[Description]]
+             * @param   {[[Type]]} dir   [[Description]]
+             * @param   {[[Type]]} start [[Description]]
+             * @returns {[[Type]]} [[Description]]
+             */
             normalizeData = function (data, dir, start) {
                 // return data as an array of point arrays,
                 // in form [[x1,y1...], [x2,y2...], ...]
