@@ -1142,7 +1142,14 @@
                     maxHeight = 0,
                     maxWidth = 0,
                     nrOfWorkItems = plot.objectCounter.workitem.total, // obj.type
-                    currentWorkItem = plot.objectCounter.workitem.current;  // integer
+                    currentWorkItem = plot.objectCounter.workitem.current,  // integer
+                    $target = plot.target,
+                    $workitem = $("<div />", {
+                        "class": "jqplot-workitem",
+                        "style": "position:absolute;"
+                    });
+                
+                //console.log("plot", plot);
                 
                 // style and shadow properties should be set before
                 // every draw of marker renderer.
@@ -1203,13 +1210,32 @@
                     obj.gridStart = [xstart, ystart];
                     obj.gridStop = [xstop, ystop];
                     
-                    canvas._ctx.fillStyle = obj.options.color;
+                    // Not using canvas elements, but you could if you wanted to.
+                    //canvas._ctx.fillStyle = obj.options.color;
                     
                     //console.log("workitem", xstart, ystart, xstop - xstart, ystop - ystart);
                     
                     // x, y, width, height 
                     //canvas._ctx.fillRect(0, 0, 100, 100);
-                    canvas._ctx.fillRect(xstart, ystart, xstop - xstart, ystop);
+                    //canvas._ctx.fillRect(xstart, ystart, xstop - xstart, ystop);
+                    
+                    $workitem.css({
+                        "top": ystart + plot._gridPadding.top + "px",
+                        "left": xstart + plot._gridPadding.left + "px",
+                        "height": ystop + "px",
+                        "width": xstop - xstart + "px",
+                        "backgroundColor": obj.options.color || ""
+                    });
+                    
+                    if (obj.options.icon) {
+                        $workitem.addClass("icon-" + obj.options.icons);
+                    }
+                    
+                    if (obj.options.content) {
+                        $workitem.html(obj.options.content);
+                    }
+                    
+                    $target.append($workitem);
                     
                 }
                 
@@ -1222,6 +1248,9 @@
         
         // @TODO here if I want to have z-index different on all overlay; 
         this.canvas._ctx.clearRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
+        
+        // Clear all existing div inside the plot.target
+        $(plot.target).find(".jqplot-workitem").remove();
 
         // Count how many objects for each type we have to render
         for (k = 0; k < objslen; k++) {
