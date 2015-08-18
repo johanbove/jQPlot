@@ -1219,27 +1219,32 @@
                     //canvas._ctx.fillRect(0, 0, 100, 100);
                     //canvas._ctx.fillRect(xstart, ystart, xstop - xstart, ystop);
                     
-                    $workitem.css({
-                        "top": ystart + plot._gridPadding.top + "px",
-                        "left": xstart + plot._gridPadding.left + "px",
-                        "height": ystop + "px",
-                        "width": xstop - xstart + "px",
-                        "backgroundColor": obj.options.color || ""
-                    });
+                    // Don't generate work items which won't be visible
+                    if (xstart >= 0) {
                     
-                    if (obj.options.icon) {
-                        $workitem.addClass("icon-" + obj.options.icon);
+                        $workitem.css({
+                            "top": ystart + plot._gridPadding.top + "px",
+                            "left": xstart + plot._gridPadding.left + "px",
+                            "height": ystop + "px",
+                            "width": xstop - xstart + "px",
+                            "backgroundColor": obj.options.color || ""
+                        });
+
+                        if (obj.options.icon) {
+                            $workitem.addClass("icon-" + obj.options.icon);
+                        }
+
+                        if (obj.options.content) {
+                            $workitem.html(obj.options.content);
+                        }
+
+                        if (obj.options.className) {
+                            $workitem.addClass(obj.options.className);
+                        }
+
+                        $target.append($workitem);
+                        
                     }
-                    
-                    if (obj.options.content) {
-                        $workitem.html(obj.options.content);
-                    }
-                    
-                    if (obj.options.className) {
-                        $workitem.addClass(obj.options.className);
-                    }
-                    
-                    $target.append($workitem);
                     
                 }
                 
