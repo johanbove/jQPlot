@@ -1,3 +1,5 @@
+/*jslint browser: true, plusplus: true, nomen: true, white: false, continue: true */
+/*global jQuery */
 /**
  * jqPlot
  * Pure JavaScript plotting plugin using jQuery
