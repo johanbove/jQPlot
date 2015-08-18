@@ -1228,11 +1228,15 @@
                     });
                     
                     if (obj.options.icon) {
-                        $workitem.addClass("icon-" + obj.options.icons);
+                        $workitem.addClass("icon-" + obj.options.icon);
                     }
                     
                     if (obj.options.content) {
                         $workitem.html(obj.options.content);
+                    }
+                    
+                    if (obj.options.className) {
+                        $workitem.addClass(obj.options.className);
                     }
                     
                     $target.append($workitem);
