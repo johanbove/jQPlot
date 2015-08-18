@@ -1,5 +1,5 @@
 /*jslint browser: true, plusplus: true, nomen: true, white: false, continue: true */
-/*global jQuery, console, jqPlot */
+/*global jQuery */
 /**
  * jqPlot
  * Pure JavaScript plotting plugin using jQuery
@@ -80,9 +80,9 @@
         elem.width = w;
         elem.height = h;
         
-        this._elem = $(elem);
-        this._elem.addClass('jqplot-grid-canvas');
-        this._elem.css({ position: 'absolute', left: 0, top: 0 });
+        this._elem = $(elem)
+            .addClass('jqplot-grid-canvas')
+            .css({ position: 'absolute', left: 0, top: 0 });
         
         elem = plot.canvasManager.initCanvas(elem);
 
