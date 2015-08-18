@@ -266,7 +266,79 @@
             </script>
             
         </div>
+        
+        <div class="coding">
+        
+            <div id="chart4" style="margin:20px;"></div>
+            
+            <script>
+            
+                $(function() {
+                
+                    var line1= [['2008-06-30 8:00AM', 4], ['2008-7-14 8:00AM', 6.5], ['2008-7-28 8:00AM', 5.7], ['2008-8-11 8:00AM', 9], ['2008-8-25 8:00AM', 8.2]];
+                    var plot4 = $.jqplot('chart4', [line1], {
+                            title: 'Customized Date Axis', 
+                            axes: {
+                                xaxis:{
+                                    renderer: $.jqplot.DateAxisRenderer, 
+                                    tickOptions: {
+                                        formatString: '%b %#d, %#I %p'
+                                    },
+                                    min: 'June 16, 2008 8:00AM', 
+                                    tickInterval: '2 weeks'
+                                }
+                            },
+                            series: [
+                                {
+                                    lineWidth: 4,
+                                    markerOptions: {
+                                        style: 'square'
+                                    }
+                                }
+                           ]
+                    });
+                    
+                
+                });
+            
+            </script>
+            
+        </div>
 
+        <div class="coding">
+        
+            <div id="chart5" style="margin:20px;"></div>
+        
+            <script>
+            
+                $(function() {
+                
+                    var line1 = [['2011-10-29 6:05', 4], ['2011-10-29 6:06', 6.5]];    
+                    var plot5 = $.jqplot('chart5', [line1], {
+                        title: 'Customized Date Axis using a Short Interval', 
+                        axes: {
+                            xaxis: {
+                                renderer: $.jqplot.DateAxisRenderer,
+                                tickOptions: {
+                                    formatString: '%H:%M:%S'
+                                },
+                                tickInterval: '15 second'
+                            }
+                        },
+                        series: [
+                            {
+                                lineWidth: 4,
+                                markerOptions: { style: 'square'}
+                            }
+                        ]
+                    });
+                
+                });
+            
+            </script>
+            
+        </div>
+        
         <script src="../../common/$.jqplot.demo.common.js"></script>
     </body>
 </html>
