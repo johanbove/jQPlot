@@ -1,3 +1,6 @@
+/*jslint browser: true, plusplus: true, nomen: true, white: false, continue: true */
+/*global jQuery */
+
 /**
  * jqPlot
  * Pure JavaScript plotting plugin using jQuery
@@ -28,14 +31,21 @@
  *     "This code is unrestricted: you are free to use it however you like."
  * 
  */
-(function($) {
-    // class: $.jqplot.LinearAxisRenderer
-    // The default jqPlot axis renderer, creating a numeric axis.
-    $.jqplot.LinearAxisRenderer = function() {
-    };
+(function ($) {
     
-    // called with scope of axis object.
-    $.jqplot.LinearAxisRenderer.prototype.init = function(options){
+    "use strict";
+    
+    /**
+     * @class $.jqplot.LinearAxisRenderer
+     * @classdesc The default jqPlot axis renderer, creating a numeric axis.
+     */
+    $.jqplot.LinearAxisRenderer = function () {};
+    
+    /**
+     * Called with scope of axis object.
+     * @param {Object} options
+     */
+    $.jqplot.LinearAxisRenderer.prototype.init = function (options) {
         // prop: breakPoints
         // EXPERIMENTAL!! Use at your own risk!
         // Works only with linear axes and the default tick renderer.
@@ -93,23 +103,39 @@
         this._autoFormatString = '';
         this._overrideFormatString = false;
         this._scalefact = 1.0;
+        // prop: labelFullHoursOnly
+        // true so only full hours will be displayed.
+        // Only works with formatString "%H:%M"
+        this.labelFullHoursOnly = false;
+        
         $.extend(true, this, options);
+        
         if (this.breakPoints) {
             if (!$.isArray(this.breakPoints)) {
                 this.breakPoints = null;
-            }
-            else if (this.breakPoints.length < 2 || this.breakPoints[1] <= this.breakPoints[0]) {
+            } else if (this.breakPoints.length < 2 || this.breakPoints[1] <= this.breakPoints[0]) {
                 this.breakPoints = null;
             }
         }
-        if (this.numberTicks != null && this.numberTicks < 2) {
+        
+        if (this.numberTicks !== null && this.numberTicks < 2) {
             this.numberTicks = 2;
         }
+        
         this.resetDataBounds();
+        
     };
     
     // called with scope of axis
-    $.jqplot.LinearAxisRenderer.prototype.draw = function(ctx, plot) {
+    $.jqplot.LinearAxisRenderer.prototype.draw = function (ctx, plot) {
+        
+        var dim,
+            temp,
+            t,
+            tick,
+            elem,
+            i;
+        
         if (this.show) {
             // populate the axis label and value properties.
             // createTicks is a method on the renderer, but
@@ -118,8 +144,7 @@
             // fill a div with axes labels in the right direction.
             // Need to pregenerate each axis to get its bounds and
             // position it and the labels correctly on the plot.
-            var dim=0;
-            var temp;
+            dim = 0;
             // Added for theming.
             if (this._elem) {
                 // Memory Leaks patch
@@ -129,29 +154,28 @@
             }
             
             this._elem = $(document.createElement('div'));
-            this._elem.addClass('jqplot-axis jqplot-'+this.name);
+            this._elem.addClass('jqplot-axis jqplot-' + this.name);
             this._elem.css('position', 'absolute');
-
             
-            if (this.name == 'xaxis' || this.name == 'x2axis') {
+            if (this.name === 'xaxis' || this.name === 'x2axis') {
                 this._elem.width(this._plotDimensions.width);
-            }
-            else {
+            } else {
                 this._elem.height(this._plotDimensions.height);
             }
             
             // create a _label object.
             this.labelOptions.axis = this.name;
             this._label = new this.labelRenderer(this.labelOptions);
+            
             if (this._label.show) {
-                var elem = this._label.draw(ctx, plot);
+                elem = this._label.draw(ctx, plot);
                 elem.appendTo(this._elem);
                 elem = null;
             }
     
-            var t = this._ticks;
-            var tick;
-            for (var i=0; i<t.length; i++) {
+            t = this._ticks;
+            
+            for (i = 0; i < t.length; i++) {
                 tick = t[i];
                 if (tick.show && tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
                     this._elem.append(tick.draw(ctx, plot));
@@ -164,7 +188,7 @@
     };
     
     // called with scope of an axis
-    $.jqplot.LinearAxisRenderer.prototype.reset = function() {
+    $.jqplot.LinearAxisRenderer.prototype.reset = function () {
         this.min = this._options.min;
         this.max = this._options.max;
         this.tickInterval = this._options.tickInterval;
@@ -173,68 +197,79 @@
         if (this._overrideFormatString && this.tickOptions && this.tickOptions.formatString) {
             this.tickOptions.formatString = '';
         }
-
         // this._ticks = this.__ticks;
     };
     
     // called with scope of axis
-    $.jqplot.LinearAxisRenderer.prototype.set = function() { 
-        var dim = 0;
-        var temp;
-        var w = 0;
-        var h = 0;
-        var lshow = (this._label == null) ? false : this._label.show;
+    $.jqplot.LinearAxisRenderer.prototype.set = function () {
+        
+        var dim,
+            temp,
+            w,
+            h,
+            lshow,
+            t,
+            tick,
+            i;
+        
+        dim = 0;
+        w = 0;
+        h = 0;
+        lshow = (this._label === null) ? false : this._label.show;
+        
         if (this.show) {
-            var t = this._ticks;
-            var tick;
-            for (var i=0; i<t.length; i++) {
+            
+            t = this._ticks;
+            
+            for (i = 0; i < t.length; i++) {
                 tick = t[i];
+                
                 if (!tick._breakTick && tick.show && tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
-                    if (this.name == 'xaxis' || this.name == 'x2axis') {
+                    
+                    if (this.name === 'xaxis' || this.name === 'x2axis') {
                         temp = tick._elem.outerHeight(true);
-                    }
-                    else {
+                    } else {
                         temp = tick._elem.outerWidth(true);
                     }
+                    
                     if (temp > dim) {
                         dim = temp;
                     }
                 }
             }
+            
             tick = null;
             t = null;
             
             if (lshow) {
                 w = this._label._elem.outerWidth(true);
-                h = this._label._elem.outerHeight(true); 
+                h = this._label._elem.outerHeight(true);
             }
-            if (this.name == 'xaxis') {
+            
+            if (this.name === 'xaxis') {
                 dim = dim + h;
-                this._elem.css({'height':dim+'px', left:'0px', bottom:'0px'});
-            }
-            else if (this.name == 'x2axis') {
+                this._elem.css({'height': dim + 'px', left: '0px', bottom: '0px'});
+            } else if (this.name === 'x2axis') {
                 dim = dim + h;
-                this._elem.css({'height':dim+'px', left:'0px', top:'0px'});
-            }
-            else if (this.name == 'yaxis') {
+                this._elem.css({'height': dim + 'px', left: '0px', top: '0px'});
+            } else if (this.name === 'yaxis') {
                 dim = dim + w;
-                this._elem.css({'width':dim+'px', left:'0px', top:'0px'});
-                if (lshow && this._label.constructor == $.jqplot.AxisLabelRenderer) {
-                    this._label._elem.css('width', w+'px');
+                this._elem.css({'width': dim + 'px', left: '0px', top: '0px'});
+                if (lshow && this._label.constructor === $.jqplot.AxisLabelRenderer) {
+                    this._label._elem.css('width', w + 'px');
+                }
+            } else {
+                dim = dim + w;
+                this._elem.css({'width': dim + 'px', right: '0px', top: '0px'});
+                if (lshow && this._label.constructor === $.jqplot.AxisLabelRenderer) {
+                    this._label._elem.css('width', w + 'px');
                 }
             }
-            else {
-                dim = dim + w;
-                this._elem.css({'width':dim+'px', right:'0px', top:'0px'});
-                if (lshow && this._label.constructor == $.jqplot.AxisLabelRenderer) {
-                    this._label._elem.css('width', w+'px');
-                }
-            }
-        }  
-    };    
+        }
+    };
     
     // called with scope of axis
-    $.jqplot.LinearAxisRenderer.prototype.createTicks = function(plot) {
+    $.jqplot.LinearAxisRenderer.prototype.createTicks = function (plot) {
         // we're are operating on an axis here
         var ticks = this._ticks;
         var userTicks = this.ticks;
@@ -253,48 +288,41 @@
         var userTI = this.tickInterval;
 
         var threshold = 30;
-        this._scalefact =  (Math.max(dim, threshold+1) - threshold)/300.0;
+        this._scalefact =  (Math.max(dim, threshold + 1) - threshold) / 300.0;
         
         // if we already have ticks, use them.
         // ticks must be in order of increasing value.
         
         if (userTicks.length) {
             // ticks could be 1D or 2D array of [val, val, ,,,] or [[val, label], [val, label], ...] or mixed
-            for (i=0; i<userTicks.length; i++){
+            for (i = 0; i < userTicks.length; i++) {
                 var ut = userTicks[i];
                 var t = new this.tickRenderer(this.tickOptions);
                 if ($.isArray(ut)) {
                     t.value = ut[0];
                     if (this.breakPoints) {
-                        if (ut[0] == this.breakPoints[0]) {
+                        if (ut[0] === this.breakPoints[0]) {
                             t.label = this.breakTickLabel;
                             t._breakTick = true;
                             t.showGridline = false;
                             t.showMark = false;
-                        }
-                        else if (ut[0] > this.breakPoints[0] && ut[0] <= this.breakPoints[1]) {
+                        } else if (ut[0] > this.breakPoints[0] && ut[0] <= this.breakPoints[1]) {
                             t.show = false;
                             t.showGridline = false;
                             t.label = ut[1];
-                        }
-                        else {
+                        } else {
                             t.label = ut[1];
                         }
-                    }
-                    else {
+                    } else {
                         t.label = ut[1];
                     }
                     t.setTick(ut[0], this.name);
                     this._ticks.push(t);
-                }
-
-                else if ($.isPlainObject(ut)) {
+                } else if ($.isPlainObject(ut)) {
                     $.extend(true, t, ut);
                     t.axis = this.name;
                     this._ticks.push(t);
-                }
-                
-                else {
+                } else {
                     t.value = ut;
                     if (this.breakPoints) {
                         if (ut == this.breakPoints[0]) {
@@ -314,16 +342,15 @@
             }
             this.numberTicks = userTicks.length;
             this.min = this._ticks[0].value;
-            this.max = this._ticks[this.numberTicks-1].value;
+            this.max = this._ticks[this.numberTicks - 1].value;
             this.tickInterval = (this.max - this.min) / (this.numberTicks - 1);
-        }
         
         // we don't have any ticks yet, let's make some!
-        else {
-            if (name == 'xaxis' || name == 'x2axis') {
+        } else {
+            
+            if (name === 'xaxis' || name == 'x2axis') {
                 dim = this._plotDimensions.width;
-            }
-            else {
+            } else {
                 dim = this._plotDimensions.height;
             }
 
@@ -343,14 +370,13 @@
             min = ((this.min != null) ? this.min : db.min);
             max = ((this.max != null) ? this.max : db.max);
 
-
             // Merging merge#42 - issue#744
             //add padding if we are talking about a single-point series
             if (min === max) {
                 var adj = 0.05;
-            if (min > 0) {
-                adj = Math.max(Math.log(min) / Math.LN10, 0.05);
-            }
+                if (min > 0) {
+                    adj = Math.max(Math.log(min) / Math.LN10, 0.05);
+                }
                 min -= adj;
                 max += adj;
             }
@@ -359,12 +385,12 @@
             var rmin, rmax;
             var temp;
 
-            if (this.tickOptions == null || !this.tickOptions.formatString) {
+            if (this.tickOptions === null || !this.tickOptions.formatString) {
                 this._overrideFormatString = true;
             }
 
             // Doing complete autoscaling
-            if (this.min == null || this.max == null && this.tickInterval == null && !this.autoscale) {
+            if (this.min === null || this.max === null && this.tickInterval === null && !this.autoscale) {
                 // Check if user must have tick at 0 or 100 and ensure they are in range.
                 // The autoscaling algorithm will always place ticks at 0 and 100 if they are in range.
                 if (this.forceTickAt0) {
@@ -388,11 +414,9 @@
                 var keepMin = false,
                     keepMax = false;
 
-                if (this.min != null) {
+                if (this.min !== null) {
                     keepMin = true;
-                }
-
-                else if (this.max != null) {
+                } else if (this.max !== null) {
                     keepMax = true;
                 }
 
@@ -400,6 +424,7 @@
                 // var tdim = Math.max(dim, threshold+1);
                 // this._scalefact =  (tdim-threshold)/300.0;
                 var ret = $.jqplot.LinearTickGenerator(min, max, this._scalefact, _numberTicks, keepMin, keepMax); 
+                
                 // calculate a padded max and min, points should be less than these
                 // so that they aren't too close to the edges of the plot.
                 // User can adjust how much padding is allowed with pad, padMin and PadMax options. 
@@ -421,16 +446,15 @@
                 this.numberTicks = ret[2];
                 this._autoFormatString = ret[3];
                 this.tickInterval = ret[4];
-            }
-
+            
             // User has specified some axis scale related option, can use auto algorithm
-            else {
+            } else {
                 
                 // if min and max are same, space them out a bit
-                if (min == max) {
+                if (min === max) {
                     var adj = 0.05;
                     if (min > 0) {
-                        adj = Math.max(Math.log(min)/Math.LN10, 0.05);
+                        adj = Math.max(Math.log(min) / Math.LN10, 0.05);
                     }
                     min -= adj;
                     max += adj;
@@ -440,22 +464,22 @@
                 // Will use numberTicks and tickInterval if supplied.  Ticks
                 // across multiple axes may not line up depending on how
                 // bars are to be plotted.
-                if (this.autoscale && this.min == null && this.max == null) {
+                if (this.autoscale && this.min === null && this.max === null) {
                     var rrange, ti, margin;
                     var forceMinZero = false;
                     var forceZeroLine = false;
-                    var intervals = {min:null, max:null, average:null, stddev:null};
+                    var intervals = {min: null, max: null, average: null, stddev: null};
                     // if any series are bars, or if any are fill to zero, and if this
                     // is the axis to fill toward, check to see if we can start axis at zero.
-                    for (var i=0; i<this._series.length; i++) {
+                    for (var i = 0; i < this._series.length; i++) {
                         var s = this._series[i];
-                        var faname = (s.fillAxis == 'x') ? s._xaxis.name : s._yaxis.name;
+                        var faname = (s.fillAxis === 'x') ? s._xaxis.name : s._yaxis.name;
                         // check to see if this is the fill axis
                         if (this.name == faname) {
                             var vals = s._plotValues[s.fillAxis];
                             var vmin = vals[0];
                             var vmax = vals[0];
-                            for (var j=1; j<vals.length; j++) {
+                            for (var j = 1; j<vals.length; j++) {
                                 if (vals[j] < vmin) {
                                     vmin = vals[j];
                                 }
@@ -769,10 +793,13 @@
     //
     // > plot.axes.yaxis.renderer.resetTickValues.call(plot.axes.yaxis, yarr);
     //
-    $.jqplot.LinearAxisRenderer.prototype.resetTickValues = function(opts) {
-        if ($.isArray(opts) && opts.length == this._ticks.length) {
-            var t;
-            for (var i=0; i<opts.length; i++) {
+    $.jqplot.LinearAxisRenderer.prototype.resetTickValues = function (opts) {
+        
+        var t,
+            i;
+        
+        if ($.isArray(opts) && opts.length === this._ticks.length) {
+            for (i = 0; i < opts.length; i++) {
                 t = this._ticks[i];
                 t.value = opts[i];
                 t.label = t.formatter(t.formatString, opts[i]);
@@ -791,7 +818,8 @@
     };
     
     // called with scope of axis
-    $.jqplot.LinearAxisRenderer.prototype.pack = function(pos, offsets) {
+    $.jqplot.LinearAxisRenderer.prototype.pack = function (pos, offsets) {
+        
         // Add defaults for repacking from resetTickValues function.
         pos = pos || {};
         offsets = offsets || this._offsets;
@@ -814,6 +842,7 @@
         
         // point to unit and unit to point conversions references to Plot DOM element top left corner.
         if (this.breakPoints) {
+            
             unitlength = unitlength - this.breakPoints[1] + this.breakPoints[0];
             
             this.p2u = function(p){
@@ -821,176 +850,189 @@
             };
         
             this.u2p = function(u){
-                if (u > this.breakPoints[0] && u < this.breakPoints[1]){
+                if (u > this.breakPoints[0] && u < this.breakPoints[1]) {
                     u = this.breakPoints[0];
                 }
                 if (u <= this.breakPoints[0]) {
                     return (u - min) * pixellength / unitlength + offmin;
-                }
-                else {
+                } else {
                     return (u - this.breakPoints[1] + this.breakPoints[0] - min) * pixellength / unitlength + offmin;
                 }
             };
                 
-            if (this.name.charAt(0) == 'x'){
-                this.series_u2p = function(u){
-                    if (u > this.breakPoints[0] && u < this.breakPoints[1]){
+            if (this.name.charAt(0) === 'x'){
+                
+                this.series_u2p = function (u) {
+                    
+                    if (u > this.breakPoints[0] && u < this.breakPoints[1]) {
                         u = this.breakPoints[0];
                     }
+                    
                     if (u <= this.breakPoints[0]) {
                         return (u - min) * pixellength / unitlength;
-                    }
-                    else {
+                    } else {
                         return (u - this.breakPoints[1] + this.breakPoints[0] - min) * pixellength / unitlength;
                     }
                 };
-                this.series_p2u = function(p){
+                
+                this.series_p2u = function (p) {
                     return p * unitlength / pixellength + min;
                 };
-            }
-        
-            else {
-                this.series_u2p = function(u){
+                
+            } else {
+                
+                this.series_u2p = function (u) {
                     if (u > this.breakPoints[0] && u < this.breakPoints[1]){
                         u = this.breakPoints[0];
                     }
+                    
                     if (u >= this.breakPoints[1]) {
                         return (u - max) * pixellength / unitlength;
-                    }
-                    else {
+                    } else {
                         return (u + this.breakPoints[1] - this.breakPoints[0] - max) * pixellength / unitlength;
                     }
                 };
-                this.series_p2u = function(p){
+                
+                this.series_p2u = function (p) {
                     return p * unitlength / pixellength + max;
                 };
             }
-        }
-        else {
-            this.p2u = function(p){
+            
+        } else {
+            
+            this.p2u = function (p) {
                 return (p - offmin) * unitlength / pixellength + min;
             };
         
-            this.u2p = function(u){
+            this.u2p = function (u) {
                 return (u - min) * pixellength / unitlength + offmin;
             };
                 
-            if (this.name == 'xaxis' || this.name == 'x2axis'){
-                this.series_u2p = function(u){
+            if (this.name === 'xaxis' || this.name === 'x2axis'){
+                this.series_u2p = function (u) {
                     return (u - min) * pixellength / unitlength;
                 };
-                this.series_p2u = function(p){
+                this.series_p2u = function (p) {
                     return p * unitlength / pixellength + min;
                 };
-            }
-        
-            else {
-                this.series_u2p = function(u){
+            } else {
+                this.series_u2p = function (u) {
                     return (u - max) * pixellength / unitlength;
                 };
-                this.series_p2u = function(p){
+                this.series_p2u = function (p) {
                     return p * unitlength / pixellength + max;
                 };
             }
         }
         
         if (this.show) {
-            if (this.name == 'xaxis' || this.name == 'x2axis') {
-                for (var i=0; i<ticks.length; i++) {
+            
+            if (this.name === 'xaxis' || this.name === 'x2axis') {
+                
+                for (var i = 0; i < ticks.length; i++) {
+                    
                     var t = ticks[i];
+                    
                     if (t.show && t.showLabel) {
+                        
                         var shim;
                         
-                        if (t.constructor == $.jqplot.CanvasAxisTickRenderer && t.angle) {
+                        if (t.constructor === $.jqplot.CanvasAxisTickRenderer && t.angle) {
+                            
                             // will need to adjust auto positioning based on which axis this is.
-                            var temp = (this.name == 'xaxis') ? 1 : -1;
+                            var temp = (this.name === 'xaxis') ? 1 : -1;
+                            
                             switch (t.labelPosition) {
-                                case 'auto':
-                                    // position at end
-                                    if (temp * t.angle < 0) {
-                                        shim = -t.getWidth() + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
-                                    }
-                                    // position at start
-                                    else {
-                                        shim = -t._textRenderer.height * Math.sin(t._textRenderer.angle) / 2;
-                                    }
-                                    break;
-                                case 'end':
+                            case 'auto':
+                                // position at end
+                                if (temp * t.angle < 0) {
                                     shim = -t.getWidth() + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
-                                    break;
-                                case 'start':
+                                // position at start
+                                } else {
                                     shim = -t._textRenderer.height * Math.sin(t._textRenderer.angle) / 2;
-                                    break;
-                                case 'middle':
-                                    shim = -t.getWidth()/2 + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
-                                    break;
-                                default:
-                                    shim = -t.getWidth()/2 + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
-                                    break;
+                                }
+                                break;
+                            case 'end':
+                                shim = -t.getWidth() + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
+                                break;
+                            case 'start':
+                                shim = -t._textRenderer.height * Math.sin(t._textRenderer.angle) / 2;
+                                break;
+                            case 'middle':
+                                shim = -t.getWidth() / 2 + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
+                                break;
+                            default:
+                                shim = -t.getWidth() / 2 + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
+                                break;
                             }
+                            
+                        } else {
+                            shim = -t.getWidth() / 2;
                         }
-                        else {
-                            shim = -t.getWidth()/2;
-                        }
+                        
                         var val = this.u2p(t.value) + shim + 'px';
+                        
                         t._elem.css('left', val);
+                        
                         t.pack();
+                        
                     }
                 }
+                
                 if (lshow) {
+                    
                     var w = this._label._elem.outerWidth(true);
-                    this._label._elem.css('left', offmin + pixellength/2 - w/2 + 'px');
-                    if (this.name == 'xaxis') {
+                    
+                    this._label._elem.css('left', offmin + pixellength / 2 - w / 2 + 'px');
+                    if (this.name === 'xaxis') {
                         this._label._elem.css('bottom', '0px');
-                    }
-                    else {
+                    } else {
                         this._label._elem.css('top', '0px');
                     }
                     this._label.pack();
                 }
-            }
-            else {
-                for (var i=0; i<ticks.length; i++) {
+                
+            } else {
+                for (var i = 0; i < ticks.length; i++) {
                     var t = ticks[i];
                     if (t.show && t.showLabel) {                        
                         var shim;
-                        if (t.constructor == $.jqplot.CanvasAxisTickRenderer && t.angle) {
+                        if (t.constructor === $.jqplot.CanvasAxisTickRenderer && t.angle) {
                             // will need to adjust auto positioning based on which axis this is.
-                            var temp = (this.name == 'yaxis') ? 1 : -1;
+                            var temp = (this.name === 'yaxis') ? 1 : -1;
                             switch (t.labelPosition) {
-                                case 'auto':
-                                    // position at end
-                                case 'end':
-                                    if (temp * t.angle < 0) {
-                                        shim = -t._textRenderer.height * Math.cos(-t._textRenderer.angle) / 2;
-                                    }
-                                    else {
-                                        shim = -t.getHeight() + t._textRenderer.height * Math.cos(t._textRenderer.angle) / 2;
-                                    }
-                                    break;
-                                case 'start':
-                                    if (t.angle > 0) {
-                                        shim = -t._textRenderer.height * Math.cos(-t._textRenderer.angle) / 2;
-                                    }
-                                    else {
-                                        shim = -t.getHeight() + t._textRenderer.height * Math.cos(t._textRenderer.angle) / 2;
-                                    }
-                                    break;
-                                case 'middle':
-                                    // if (t.angle > 0) {
-                                    //     shim = -t.getHeight()/2 + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
-                                    // }
-                                    // else {
-                                    //     shim = -t.getHeight()/2 - t._textRenderer.height * Math.sin(t._textRenderer.angle) / 2;
-                                    // }
-                                    shim = -t.getHeight()/2;
-                                    break;
-                                default:
-                                    shim = -t.getHeight()/2;
-                                    break;
+                            case 'auto':
+                                // position at end
+                            case 'end':
+                                if (temp * t.angle < 0) {
+                                    shim = -t._textRenderer.height * Math.cos(-t._textRenderer.angle) / 2;
+                                }
+                                else {
+                                    shim = -t.getHeight() + t._textRenderer.height * Math.cos(t._textRenderer.angle) / 2;
+                                }
+                                break;
+                            case 'start':
+                                if (t.angle > 0) {
+                                    shim = -t._textRenderer.height * Math.cos(-t._textRenderer.angle) / 2;
+                                }
+                                else {
+                                    shim = -t.getHeight() + t._textRenderer.height * Math.cos(t._textRenderer.angle) / 2;
+                                }
+                                break;
+                            case 'middle':
+                                // if (t.angle > 0) {
+                                //     shim = -t.getHeight() / 2 + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
+                                // }
+                                // else {
+                                //     shim = -t.getHeight() / 2 - t._textRenderer.height * Math.sin(t._textRenderer.angle) / 2;
+                                // }
+                                shim = -t.getHeight() / 2;
+                                break;
+                            default:
+                                shim = -t.getHeight() / 2;
+                                break;
                             }
-                        }
-                        else {
+                        } else {
                             shim = -t.getHeight()/2;
                         }
                         
@@ -999,13 +1041,16 @@
                         t.pack();
                     }
                 }
+                
                 if (lshow) {
+                    
                     var h = this._label._elem.outerHeight(true);
-                    this._label._elem.css('top', offmax - pixellength/2 - h/2 + 'px');
-                    if (this.name == 'yaxis') {
+                    
+                    this._label._elem.css('top', offmax - pixellength / 2 - h / 2 + 'px');
+                    
+                    if (this.name === 'yaxis') {
                         this._label._elem.css('left', '0px');
-                    }
-                    else {
+                    } else {
                         this._label._elem.css('right', '0px');
                     }   
                     this._label.pack();
@@ -1015,4 +1060,5 @@
 
         ticks = null;
     };
-})(jQuery);
+    
+}(jQuery));
