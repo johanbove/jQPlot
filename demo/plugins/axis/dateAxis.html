@@ -7,9 +7,9 @@
         <script src="../../../dist/core/jquery.jqplot.min.js"></script>
 
         <!-- Axes -->
-        <script src="../../../dist/plugins/axis/jqplot.dateAxisRenderer.min.js"></script>
-        <script src="../../../dist/plugins/axis/jqplot.canvasAxisTickRenderer.min.js"></script>
-        <script src="../../../dist/plugins/text/jqplot.canvasTextRenderer.min.js"></script>
+        <script src="../../../src/plugins/axis/jqplot.dateAxisRenderer.js"></script>
+        <script src="../../../src/plugins/axis/jqplot.canvasAxisTickRenderer.js"></script>
+        <script src="../../../src/plugins/text/jqplot.canvasTextRenderer.js"></script>
 
         <!-- Customization theme -->
         <script src="../../../dist/plugins/themes/extendedThemes.min.js"></script>
@@ -27,14 +27,14 @@
         <link type="text/css" rel="stylesheet" href="../../../dist/core/jquery.jqplot.min.css"/>
     </head>
     <body>
-
+        
         <div class="coding">		
             <div id="chart1" style="margin:20px;"></div>            
             <script>               
 				$(function(){                    
 				var line1=[['2008-09-30', 4], ['2008-10-30', 6.5], ['2008-11-30', 5.7], ['2008-12-30', 9], ['2009-01-30', 8.2]];                    
 				var plot1 = $.jqplot('chart1', [line1], {
-						title:'Date axis (PHP mode)',
+						title:'Chart 1 Date axis (PHP mode)',
 						axesDefaults : {
 							rendererOptions: {
 								tickRenderer: $.jqplot.CanvasAxisTickRenderer
@@ -80,6 +80,7 @@
             </script>
             
         </div>
+        
         <div class="coding">
             <div id="chart2" style="margin:20px;"></div>
             <script type="text/javascript">
@@ -99,7 +100,7 @@
                 $.jqplot.config.enablePlugins = true;
                     
                 var plot2 = $.jqplot('chart2', [serie1, serie2, serie3, serie4, serie5, serie6, serie7, serie8], {
-                        title:'A super chart',
+                        title:'Chart 2 A super chart',
                         axes:{
                             xaxis:{
                                 renderer: $.jqplot.DateAxisRenderer,
@@ -208,6 +209,7 @@
                 });
             </script>
         </div>        
+        
         <div class="coding">
         
             <div id="chart3" style="margin:20px;"></div>
@@ -219,10 +221,10 @@
                 var line3 = [['2008-09-30', 4], ['2008-10-30', 6.5], ['2008-11-30', 5.7], ['2008-12-30', 9], ['2009-01-30', 8.2]];
                     
 				var plot3 = $.jqplot('chart3', [line3], {
-						title:'Date axis with ticks',
+						title:'Chart 3 Date axis with ticks',
 						axesDefaults : {
 							rendererOptions: {
-								tickRenderer: $.jqplot.CanvasAxisTickRenderer
+                                tickRenderer: $.jqplot.CanvasAxisTickRenderer
 	                		},
 							tickOptions: {
 								fontSize: '10pt',
@@ -242,21 +244,23 @@
 								seriesToggleReplot: {resetAxes: true}
 							}
 						},
-						axes:{
+						
+                        axes:{
 							xaxis:{
-								renderer: $.jqplot.DateAxisRenderer, 
-								rendererOptions: {
-									tickRenderer: $.jqplot.CanvasAxisTickRenderer
-	                			},
+								renderer: $.jqplot.DateAxisRenderer,
                                 ticks: [['2008-09-30', "September"], ['2008-10-30', "October"], ['2008-11-30', "November"], ['2008-12-30', "December"], ['2009-01-30', "January"]],
 	                			tickOptions: {
 									//formatString: '%Y #%V',
 									//typeFormatter: 'php',
-									angle:-40
+									angle: -40
 								}
 							}
 						},
-						series:[{lineWidth: 4, markerOptions: {style: 'square'}}]
+                        
+						series:[{
+                            lineWidth: 4,
+                            markerOptions: {style: 'square'}
+                        }]
 					});
 
 					$('#chart3').bind('jqplotLegendToggleSerie', function (ev) {
@@ -277,7 +281,7 @@
                 
                     var line1= [['2008-06-30 8:00AM', 4], ['2008-7-14 8:00AM', 6.5], ['2008-7-28 8:00AM', 5.7], ['2008-8-11 8:00AM', 9], ['2008-8-25 8:00AM', 8.2]];
                     var plot4 = $.jqplot('chart4', [line1], {
-                            title: 'Customized Date Axis', 
+                            title: 'Chart 4 Customized Date Axis', 
                             axes: {
                                 xaxis:{
                                     renderer: $.jqplot.DateAxisRenderer, 
@@ -315,7 +319,7 @@
                 
                     var line1 = [['2011-10-29 6:05', 4], ['2011-10-29 6:06', 6.5]];    
                     var plot5 = $.jqplot('chart5', [line1], {
-                        title: 'Customized Date Axis using a Short Interval', 
+                        title: 'Chart 5 Customized Date Axis using a Short Interval', 
                         axes: {
                             xaxis: {
                                 renderer: $.jqplot.DateAxisRenderer,
