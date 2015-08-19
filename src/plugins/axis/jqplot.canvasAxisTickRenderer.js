@@ -264,8 +264,17 @@
             w,
             h;
         
+        // When no label is given, excludes "null", which is a given value
         if (!this.label) {
-            this.label = this.prefix + this.formatter(this.formatString, this.value);
+            if (!this.labelFullHoursOnly) {
+                this.label = this.prefix + this.formatter(this.formatString, this.value);
+            } else {
+                if (!this.isMinorTick) {
+                    this.label = this.prefix + this.formatter(this.formatString, this.value);
+                } else {
+                    this.label = "";
+                }
+            }
         }
         
         // Memory Leaks patch
