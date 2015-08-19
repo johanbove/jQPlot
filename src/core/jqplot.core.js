@@ -1334,19 +1334,23 @@
     Axis.prototype.constructor = Axis;
     
     Axis.prototype.init = function () {
+        
         if ($.isFunction(this.renderer)) {
             this.renderer = new this.renderer();
         }
         // set the axis name
         this.tickOptions.axis = this.name;
+        
         // if showMark or showLabel tick options not specified, use value of axis option.
         // showTicks overrides showTickMarks.
         if (typeof this.tickOptions.showMark === "undefined") {
             this.tickOptions.showMark = this.showTicks;
         }
+        
         if (typeof this.tickOptions.showTickMarks === "undefined") {
             this.tickOptions.showTickMarks = this.showTickMarks;
         }
+        
         if (typeof this.tickOptions.showLabel === "undefined") {
             this.tickOptions.showLabel = this.showTicks;
         }
@@ -1356,30 +1360,38 @@
         } else {
             this.labelOptions.label = this.label;
         }
+        
         if (this.showLabel === false) {
             this.labelOptions.show = false;
         }
+        
         // set the default padMax, padMin if not specified
         // special check, if no padding desired, padding
         // should be set to 1.0
         if (this.pad === 0) {
             this.pad = 1.0;
         }
+        
         if (this.padMax === 0) {
             this.padMax = 1.0;
         }
+        
         if (this.padMin === 0) {
             this.padMin = 1.0;
         }
+        
         if (this.padMax === null) {
             this.padMax = (this.pad - 1) / 2 + 1;
         }
+        
         if (this.padMin === null) {
             this.padMin = (this.pad - 1) / 2 + 1;
         }
+        
         // now that padMin and padMax are correctly set, reset pad in case user has supplied 
         // padMin and/or padMax
         this.pad = this.padMax + this.padMin - 1;
+        
         if (this.min !== null || this.max !== null) {
             this.autoscale = false;
         }
@@ -1389,6 +1401,7 @@
         } else if (this.syncTicks === null) {
             this.syncTicks = false;
         }
+        
         this.renderer.init.call(this, this.rendererOptions);
         
     };
