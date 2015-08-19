@@ -723,7 +723,7 @@
         this.tickInset = 0;
         // prop: drawBaseline
         // True to draw the axis baseline.
-        this.drawBaseline = true;
+        this.drawBaseline = (typeof this.drawBaseline !== "undefined") ? this.drawBaseline : true;
         // prop: baselineWidth
         // width of the baseline in pixels.
         this.baselineWidth = null;

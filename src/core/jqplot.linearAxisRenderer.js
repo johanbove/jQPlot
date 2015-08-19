@@ -83,7 +83,7 @@
         this.breakTickLabel = "&asymp;";
         // prop: drawBaseline
         // True to draw the axis baseline.
-        this.drawBaseline = true;
+        this.drawBaseline = (typeof this.drawBaseline !== "undefined") ? this.drawBaseline : true;
         // prop: baselineWidth
         // width of the baseline in pixels.
         this.baselineWidth = null;
@@ -940,7 +940,12 @@
             if (i < this.numberTicks - 1) {
                 for (j = 0; j < this.minorTicks; j++) {
                     tt += this.tickInterval / (this.minorTicks + 1);
-                    to = $.extend(true, {}, this.tickOptions, {name: this.name, value: tt, label: '', isMinorTick: true});
+                    to = $.extend(true, {}, this.tickOptions, {
+                        name: this.name,
+                        value: tt,
+                        label: '',
+                        isMinorTick: true
+                    });
                     t = new this.tickRenderer(to);
                     this._ticks.push(t);
                 }
