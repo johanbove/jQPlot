@@ -270,34 +270,56 @@
     
     // called with scope of axis
     $.jqplot.LinearAxisRenderer.prototype.createTicks = function (plot) {
+        
+        var ticks,
+            userTicks,
+            name,
+            db,
+            dim,
+            interval,
+            min,
+            max,
+            pos1,
+            pos2,
+            tt,
+            i,
+            userMin,
+            userMax,
+            userNT,
+            userTI,
+            threshold,
+            ut,
+            t;
+        
         // we're are operating on an axis here
-        var ticks = this._ticks;
-        var userTicks = this.ticks;
-        var name = this.name;
+        ticks = this._ticks;
+        userTicks = this.ticks;
+        name = this.name;
         // databounds were set on axis initialization.
-        var db = this._dataBounds;
-        var dim = (this.name.charAt(0) === 'x') ? this._plotDimensions.width : this._plotDimensions.height;
-        var interval;
-        var min, max;
-        var pos1, pos2;
-        var tt, i;
-        // get a copy of user's settings for min/max.
-        var userMin = this.min;
-        var userMax = this.max;
-        var userNT = this.numberTicks;
-        var userTI = this.tickInterval;
+        db = this._dataBounds;
+        dim = (this.name.charAt(0) === 'x') ? this._plotDimensions.width : this._plotDimensions.height;
 
-        var threshold = 30;
+        // get a copy of user's settings for min/max.
+        userMin = this.min;
+        userMax = this.max;
+        userNT = this.numberTicks;
+        userTI = this.tickInterval;
+
+        threshold = 30;
+        
         this._scalefact =  (Math.max(dim, threshold + 1) - threshold) / 300.0;
         
         // if we already have ticks, use them.
         // ticks must be in order of increasing value.
         
         if (userTicks.length) {
+            
             // ticks could be 1D or 2D array of [val, val, ,,,] or [[val, label], [val, label], ...] or mixed
             for (i = 0; i < userTicks.length; i++) {
-                var ut = userTicks[i];
-                var t = new this.tickRenderer(this.tickOptions);
+                
+                ut = userTicks[i];
+                t = new this.tickRenderer(this.tickOptions);
+                
                 if ($.isArray(ut)) {
                     t.value = ut[0];
                     if (this.breakPoints) {
@@ -325,13 +347,12 @@
                 } else {
                     t.value = ut;
                     if (this.breakPoints) {
-                        if (ut == this.breakPoints[0]) {
+                        if (ut === this.breakPoints[0]) {
                             t.label = this.breakTickLabel;
                             t._breakTick = true;
                             t.showGridline = false;
                             t.showMark = false;
-                        }
-                        else if (ut > this.breakPoints[0] && ut <= this.breakPoints[1]) {
+                        } else if (ut > this.breakPoints[0] && ut <= this.breakPoints[1]) {
                             t.show = false;
                             t.showGridline = false;
                         }
@@ -348,7 +369,7 @@
         // we don't have any ticks yet, let's make some!
         } else {
             
-            if (name === 'xaxis' || name == 'x2axis') {
+            if (name === 'xaxis' || name === 'x2axis') {
                 dim = this._plotDimensions.width;
             } else {
                 dim = this._plotDimensions.height;
