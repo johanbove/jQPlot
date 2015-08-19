@@ -144,15 +144,17 @@
                 }
 
                 if (this.tickOptions.formatString === "%H:%M" && this.tickOptions.labelFullHoursOnly) {
+                    
                     // Check if tick.value is a full hour
                     // If not then the tick is minor
                     now.setTime(tick.value);
                     isMinor = (now.getMinutes() === 0) ? false : true;
+                    tick.setTick(tick.value, this.name, isMinor);
+                
+                // Non minor defined tick
+                } else {
+                    tick.setTick(tick.value, this.name);
                 }
-                
-                //console.log("dateAxisRenderer", tick.value, now, now.getMinutes(), this.name, isMinor);
-                
-                tick.setTick(tick.value, this.name, isMinor);
                 
                 this._ticks.push(tick);
 
