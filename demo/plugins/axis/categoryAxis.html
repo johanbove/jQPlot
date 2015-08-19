@@ -36,12 +36,16 @@
     
     <div id="chart2" style="height:300px; width:500px;"></div>
 
+    <h2>Plot 3</h2>
+    
+    <div id="chart3" style="height:300px; width:500px;"></div>
+    
     <script>
-
         $(function () {
             
             var plot1,
                 plot2,
+                plot3,
                 dataSeries = [],
                 chartOptions = {
                     seriesDefaults:{
@@ -70,7 +74,10 @@
                                 drawBaseline: false
                             },
                             min: 0,
-                            max: 100
+                            max: 100,
+                            tickOptions: {
+                                formatString: "%.0f"
+                            }
                             //showTicks: false,
                             //tickOptions: {
                             //    showMark: false
@@ -142,8 +149,16 @@
             plot1 = $.jqplot('chart1', [[50.5, 87.6, 2.5]], chartOptions);
             
             chartOptions.axes.yaxis.ticks = undefined;
+            chartOptions.axes.xaxis.tickOptions.formatString = "%.2f";
             
             plot2 = $.jqplot('chart2', [[[50.5, "Cat A"], [87.6, "Cat B"], [2.5, "Cat C"]]], chartOptions);
+            
+            chartOptions.axes.yaxis.ticks = undefined;
+            chartOptions.seriesDefaults.pointLabels.formatString = undefined;
+            //chartOptions.axes.xaxis.min = null;
+            chartOptions.axes.xaxis.max = null;
+            
+            plot3 = $.jqplot('chart3', [[[50.5, "Cat A"], [87.6, "Cat B"], [2.5, "Cat C"]]], chartOptions);
             
         });
     </script>
