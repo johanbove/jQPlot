@@ -3605,7 +3605,17 @@
 
         for (i = 0, dataLen = this.data.length; i < dataLen; i++) {
 
-            sopts = $.extend(true, {index: i}, { seriesColors: this.seriesColors, negativeSeriesColors: this.negativeSeriesColors}, this.options.seriesDefaults, this.options.series[i], {rendererOptions: {animation: {show:  this.animate}}});
+            sopts = $.extend(true, {index: i}, {
+                seriesColors: this.seriesColors,
+                negativeSeriesColors: this.negativeSeriesColors
+            }, this.options.seriesDefaults, this.options.series[i], {
+                rendererOptions: {
+                    animation: {
+                        show: this.animate
+                    }
+                }
+            });
+            
             // pass in options in case something needs set prior to initialization.
             temp = new Series(sopts);
 
