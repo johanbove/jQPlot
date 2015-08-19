@@ -1220,7 +1220,7 @@
                     //canvas._ctx.fillRect(xstart, ystart, xstop - xstart, ystop);
                     
                     // Don't generate work items which won't be visible
-                    if (xstart >= 0) {
+                    if (xstart >= 0 && xstart < plot.grid._width) {
                     
                         $workitem.css({
                             "top": ystart + plot._gridPadding.top + "px",
