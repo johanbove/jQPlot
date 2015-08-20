@@ -85,7 +85,7 @@
  * 
  */
 
-(function ($, window) {
+(function ($) {
     
     "use strict";
     
@@ -2071,7 +2071,7 @@
         if (!this.markerOptions.color) {
             this.markerOptions.color = this.color;
         }
-        if (this.markerOptions.show === null) {
+        if (typeof this.markerOptions.show === "undefined") {
             this.markerOptions.show = this.showMarker;
         }
         this.showMarker = this.markerOptions.show;
@@ -4973,4 +4973,4 @@
         yellowgreen: 'rgb(154, 205, 50)'
     };
     
-}(jQuery, window));
+}(jQuery));
