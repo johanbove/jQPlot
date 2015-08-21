@@ -1,5 +1,5 @@
 /*jslint browser: true, plusplus: true, nomen: true, white: false, continue: true */
-/*global jQuery, console, jqPlot */
+/*global jQuery, console */
 
 /**
  * jqPlot
