@@ -1,5 +1,5 @@
 /*jslint browser: true, plusplus: true, nomen: true, white: false */
-/*global jQuery, console, jqPlot */
+/*global jQuery, console */
 
 /**
  * jqPlot
@@ -31,7 +31,7 @@
  *     "This code is unrestricted: you are free to use it however you like."
  *
  */
-(function ($, window) {
+(function ($) {
     
     "use strict";
 
@@ -1766,4 +1766,4 @@
         
     };
 
-}(jQuery, window));
+}(jQuery));
