@@ -129,6 +129,6 @@
         jqutils.loadjscssfile(pp, "js");
     }
 
-    jqutils.loadjscssfile(rn + 'font-awesome.min.css', 'css');
+    //jqutils.loadjscssfile(rn + 'font-awesome.min.css', 'css');
 
 }());
