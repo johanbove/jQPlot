@@ -81,14 +81,13 @@
         RendererBestTicks;
         
     /**
-     * [[Description]]
-     * @param   {[[Type]]} min      [[Description]]
-     * @param   {[[Type]]} max      [[Description]]
-     * @param   {[[Type]]} titarget [[Description]]
-     * @returns {Array}    [[Description]]
+     * Iterate through NICEINTERVALS to find one closest to titarget
+     * @param   {Number} min      
+     * @param   {Number} max      
+     * @param   {Number} titarget 
+     * @returns {Array}
      */
     function bestDateInterval(min, max, titarget) {
-        // iterate through NICEINTERVALS to find one closest to titarget
         var badness = Number.MAX_VALUE,
             temp,
             bestTi,
@@ -108,18 +107,22 @@
         return [bestTi, bestfmt];
     }
     
+    // Tick Renderers
+    
     /**
-* Renders given ticks
-         * Binded to axis (this)
-         * @param {[[Type]]} userTicks [[Description]]
-         */
+     * Renders given ticks
+     * Binded to axis (this)
+     * @param {Array} userTicks
+     */
     RendererExistingTicks = function (userTicks) {
 
         //console.count("RendererExistingTicks");
 
         var i,
             ut,
-            tick;
+            tick,
+            isMinor = true,
+            now = new Date();
 
         // ticks could be 1D or 2D array of [val, val, ,,,] or [[val, label], [val, label], ...] or mixed
         for (i = 0; i < userTicks.length; i++) {
@@ -127,6 +130,7 @@
             ut = userTicks[i];
             tick = new this.tickRenderer(this.tickOptions);
 
+            // Is the tick an array?
             if (ut.constructor === Array) {
 
                 tick.value = new $.jsDate(ut[0]).getTime();
@@ -139,9 +143,22 @@
                     tick.showMark = false;
                 }
 
-                tick.setTick(tick.value, this.name);
+                if (this.tickOptions.formatString === "%H:%M" && this.tickOptions.labelFullHoursOnly) {
+                    
+                    // Check if tick.value is a full hour
+                    // If not then the tick is minor
+                    now.setTime(tick.value);
+                    isMinor = (now.getMinutes() === 0) ? false : true;
+                    tick.setTick(tick.value, this.name, isMinor);
+                
+                // Non minor defined tick
+                } else {
+                    tick.setTick(tick.value, this.name);
+                }
+                
                 this._ticks.push(tick);
 
+            // The tick is not an array
             } else {
 
                 tick.value = new $.jsDate(ut).getTime();
@@ -152,8 +169,15 @@
                 } else if (!this.showTickMarks) {
                     tick.showMark = false;
                 }
+                
+                if (this.tickOptions.formatString === "%H:%M" && this.tickOptions.labelFullHoursOnly) {
+                    // Check if tick.value is a full hour
+                    // If not then the tick is minor
+                    now.setTime(tick.value);
+                    isMinor = (now.getMinutes() === 0) ? false : true;
+                }
 
-                tick.setTick(tick.value, this.name);
+                tick.setTick(tick.value, this.name, isMinor);
 
                 this._ticks.push(tick);
             }
@@ -169,7 +193,7 @@
     /**
      * Special case when there is only one point, make three tick marks to center the point.
      * Binded to axis (this)
-     * @param {Object} db [[Description]]
+     * @param {Object} db
      */
     RendererOnePointTick = function (db) {
 
@@ -628,18 +652,18 @@
     $.jqplot.DateAxisRenderer.prototype.constructor = $.jqplot.DateAxisRenderer;
     
     /**
-     * [[Description]]
-     * @param {[[Type]]} typeFormatter [[Description]]
+     * Set the typeFormatter
+     * @param {Object} typeFormatter
      */
     $.jqplot.DateTickFormatter = function (typeFormatter) {
         this.typeFormatter = typeFormatter;
     };
 
     /**
-     * [[Description]]
-     * @param   {[[Type]]} format [[Description]]
-     * @param   {[[Type]]} val    [[Description]]
-     * @returns {[[Type]]} [[Description]]
+     * Formats the date for the tick according to given format using jsDate
+     * @param   {String}   format
+     * @param   {String}   val
+     * @returns {Object} jsDate object
      */
     $.jqplot.DateTickFormatter.prototype.format = function (format, val) {
         if (!format) {
@@ -649,9 +673,9 @@
     };
     
     /**
-     * [[Description]]
-     * @param   {[[Type]]} options [[Description]]
-     * @returns {[[Type]]} [[Description]]
+     * Initializes the DateAxisRenderer
+     * @param   {Object}   options
+     * @returns void
      */
     $.jqplot.DateAxisRenderer.prototype.init = function (options) {
         
@@ -685,8 +709,12 @@
         // See <$.jqplot.AxisTickRenderer>.
         // this.tickRenderer = $.jqplot.AxisTickRenderer;
         // this.labelRenderer = $.jqplot.AxisLabelRenderer;
-        this.tickOptions.typeFormatter = (typeof this.tickOptions.typeFormatter !== "undefined") ? this.tickOptions.typeFormatter : 'perl';
+        this.tickOptions.typeFormatter = this.tickOptions.typeFormatter || 'perl';
         this.tickOptions.formatter = new $.jqplot.DateTickFormatter(this.tickOptions.typeFormatter).format;
+        // prop: labelFullHoursOnly
+        // true so only full hours will be displayed.
+        // Only works with formatString "%H:%M"
+        this.tickOptions.labelFullHoursOnly = (typeof this.tickOptions.labelFullHoursOnly !== "undefined") ? this.tickOptions.labelFullHoursOnly : false;
         // prop: tickInset
         // Controls the amount to inset the first and last ticks from 
         // the edges of the grid, in multiples of the tick interval.
@@ -695,7 +723,7 @@
         this.tickInset = 0;
         // prop: drawBaseline
         // True to draw the axis baseline.
-        this.drawBaseline = true;
+        this.drawBaseline = (typeof this.drawBaseline !== "undefined") ? this.drawBaseline : true;
         // prop: baselineWidth
         // width of the baseline in pixels.
         this.baselineWidth = null;
@@ -706,14 +734,6 @@
         this._daTickInterval = null;
         
         $.extend(true, this, options);
-        
-        /*
-        var setMinMaxBounds = function () {
-        
-        }
-        */
-        
-        
         
         // Go through all the series attached to this axis and find
         // the min/max bounds for this axis.
@@ -727,6 +747,7 @@
             sd = s._stackData;
             intv = 0;
             
+            // Set stats and frequencies
             for (j = 0; j < d.length; j++) {
                 
                 if (this.name === 'xaxis' || this.name === 'x2axis') {
@@ -863,8 +884,8 @@
     };
     
     /**
-     * [[Description]]
-     * @param {Object} plot [[Description]]
+     * Creates ticks
+     * @param {Object} plot The chart plot
      */
     $.jqplot.DateAxisRenderer.prototype.createTicks = function (plot) {
         

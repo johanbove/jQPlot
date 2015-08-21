@@ -1,5 +1,5 @@
 /*jslint browser: true, plusplus: true, nomen: true, white: false, continue:true */
-/*global jQuery, console, jqPlot */
+/*global jQuery, console */
 
 /**
  * jqPlot
@@ -588,7 +588,7 @@
                 
                 if (obj.options.yformat && obj.options.yformat.type === "date") {
                     if (typeof obj.options.yformat.format !== "undefined") {
-                        console.log($.jsDate.strftime(obj.options.start[1], obj.options.yformat.format));
+                        //console.log($.jsDate.strftime(obj.options.start[1], obj.options.yformat.format));
                         ystart = plot.axes[obj.options.yaxis].series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.start[1], obj.options.yformat.format)).getTime());
                         ystop = plot.axes[obj.options.yaxis].series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.stop[1], obj.options.yformat.format)).getTime());
                     } else {
@@ -1220,7 +1220,7 @@
                     //canvas._ctx.fillRect(xstart, ystart, xstop - xstart, ystop);
                     
                     // Don't generate work items which won't be visible
-                    if (xstart >= 0) {
+                    if (xstart >= 0 && xstart < plot.grid._width) {
                     
                         $workitem.css({
                             "top": ystart + plot._gridPadding.top + "px",
